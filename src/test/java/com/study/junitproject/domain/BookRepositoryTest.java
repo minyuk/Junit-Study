@@ -9,6 +9,7 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest //DB 외 관련된 컴포넌트로만 테스트 메모리에 로딩
 public class BookRepositoryTest {
@@ -20,13 +21,11 @@ public class BookRepositoryTest {
     @BeforeEach // 각 테스트 시작전에 한번씩 실행
     public void createBook() {
         Book book = Book.builder()
-                .id(1L)
                 .title("Junit")
                 .author("겟인데어")
                 .build();
 
         Book bookPS = bookRepository.save(book);
-        System.out.println("id:==================================================" + bookPS.getId());
     }
     //가정 1 : [ createBook() + 1 save ] (T) , [ createBook() + 2 getList ] (T) (검증 완료)
     //가정 2 : [ createBook() + 1 save + createBook() + 2 getList ] (T) (검증 실패)
@@ -81,6 +80,20 @@ public class BookRepositoryTest {
         assertEquals(title, bookPS.getTitle());
         assertEquals(author, bookPS.getAuthor());
     }
-    //4. 책 수정
-    //5. 책 삭제
+
+    //4. 책 삭제
+    @Sql("classpath:db/tableInit.sql")
+    @Test
+    void delete() {
+        //given
+        Long id = 1L;
+
+        //when
+        bookRepository.deleteById(id);
+
+        //then
+        assertFalse(bookRepository.findById(id).isPresent());
+    }
+
+    //5. 책 수정
 }
