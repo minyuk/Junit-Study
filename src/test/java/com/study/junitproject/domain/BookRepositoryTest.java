@@ -96,4 +96,21 @@ public class BookRepositoryTest {
     }
 
     //5. 책 수정
+    @Sql("classpath:db/tableInit.sql")
+    @Test
+    void update() {
+        //given
+        Long id = 1L;
+        String title = "junit5";
+        String author = "minyuk";
+        Book book = new Book(id, title, author);
+
+        //when
+        Book bookPS = bookRepository.save(book);
+
+        //then
+        assertEquals(id, bookPS.getId());
+        assertEquals(title, bookPS.getTitle());
+        assertEquals(author, bookPS.getAuthor());
+    }
 }
