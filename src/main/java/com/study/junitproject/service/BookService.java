@@ -33,9 +33,14 @@ public class BookService {
 
     public BookResponseDto get(Long id) {
         Book bookPS = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 도서를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다."));
 
         return new BookResponseDto().toDto(bookPS);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void delete(Long id) {
+        bookRepository.deleteById(id);
     }
 
 }
