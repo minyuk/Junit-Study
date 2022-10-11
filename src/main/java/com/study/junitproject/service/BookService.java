@@ -4,6 +4,7 @@ import com.study.junitproject.domain.Book;
 import com.study.junitproject.domain.BookRepository;
 import com.study.junitproject.dto.BookResponseDto;
 import com.study.junitproject.dto.BookSaveRequestDto;
+import com.study.junitproject.util.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +18,15 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final MailSender mailSender;
 
     @Transactional(rollbackFor = RuntimeException.class)
     public BookResponseDto create(BookSaveRequestDto dto) {
         Book bookPS = bookRepository.save(dto.toEntity());
+
+        if (!mailSender.send()) {
+            throw new RuntimeException("메일지 전송되지 않았습니다.");
+        }
 
         return new BookResponseDto().toDto(bookPS);
     }
@@ -46,7 +52,7 @@ public class BookService {
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, BookSaveRequestDto dto) {
         Book bookPS = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다."));
 
         bookPS.update(bookPS.getTitle(), bookPS.getAuthor());
     }
