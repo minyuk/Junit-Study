@@ -51,10 +51,12 @@ public class BookService {
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void update(Long id, BookSaveRequestDto dto) {
+    public BookResponseDto update(Long id, BookSaveRequestDto dto) {
         Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다."));
 
-        bookPS.update(bookPS.getTitle(), bookPS.getAuthor());
+        bookPS.update(dto.getTitle(), dto.getAuthor());
+
+        return bookPS.toDto();
     }
 }
