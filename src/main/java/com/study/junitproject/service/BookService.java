@@ -28,12 +28,13 @@ public class BookService {
             throw new RuntimeException("메일지 전송되지 않았습니다.");
         }
 
-        return new BookResponseDto().toDto(bookPS);
+        return bookPS.toDto();
     }
 
     public List<BookResponseDto> getList() {
         return bookRepository.findAll().stream()
-                .map(new BookResponseDto()::toDto)
+//                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
+                .map(Book::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +42,7 @@ public class BookService {
         Book bookPS = bookRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다."));
 
-        return new BookResponseDto().toDto(bookPS);
+        return bookPS.toDto();
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
