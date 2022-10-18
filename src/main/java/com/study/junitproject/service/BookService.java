@@ -2,6 +2,7 @@ package com.study.junitproject.service;
 
 import com.study.junitproject.domain.Book;
 import com.study.junitproject.domain.BookRepository;
+import com.study.junitproject.web.dto.response.BookListResponseDto;
 import com.study.junitproject.web.dto.response.BookResponseDto;
 import com.study.junitproject.web.dto.request.BookSaveRequestDto;
 import com.study.junitproject.util.MailSender;
@@ -31,11 +32,13 @@ public class BookService {
         return bookPS.toDto();
     }
 
-    public List<BookResponseDto> getList() {
-        return bookRepository.findAll().stream()
+    public BookListResponseDto getList() {
+        List<BookResponseDto> bookResponseDtos = bookRepository.findAll().stream()
 //                .map((bookPS) -> new BookResponseDto().toDto(bookPS))
                 .map(Book::toDto)
                 .collect(Collectors.toList());
+
+        return BookListResponseDto.builder().bookList(bookResponseDtos).build();
     }
 
     public BookResponseDto get(Long id) {

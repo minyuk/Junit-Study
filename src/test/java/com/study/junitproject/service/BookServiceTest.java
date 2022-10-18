@@ -2,6 +2,7 @@ package com.study.junitproject.service;
 
 import com.study.junitproject.domain.Book;
 import com.study.junitproject.domain.BookRepository;
+import com.study.junitproject.web.dto.response.BookListResponseDto;
 import com.study.junitproject.web.dto.response.BookResponseDto;
 import com.study.junitproject.web.dto.request.BookSaveRequestDto;
 import com.study.junitproject.util.MailSender;
@@ -66,13 +67,13 @@ public class BookServiceTest {
         when(bookRepository.findAll()).thenReturn(books);
 
         //when
-        List<BookResponseDto> bookResponseDtoList = bookService.getList();
+        BookListResponseDto bookListResponseDto = bookService.getList();
 
         //then
-        assertThat(bookResponseDtoList.get(0).getTitle()).isEqualTo("testing1");
-        assertThat(bookResponseDtoList.get(0).getAuthor()).isEqualTo("tester1");
-        assertThat(bookResponseDtoList.get(1).getTitle()).isEqualTo("testing2");
-        assertThat(bookResponseDtoList.get(1).getAuthor()).isEqualTo("tester2");
+        assertThat(bookListResponseDto.getItems().get(0).getTitle()).isEqualTo("testing1");
+        assertThat(bookListResponseDto.getItems().get(0).getAuthor()).isEqualTo("tester1");
+        assertThat(bookListResponseDto.getItems().get(1).getTitle()).isEqualTo("testing2");
+        assertThat(bookListResponseDto.getItems().get(1).getAuthor()).isEqualTo("tester2");
     }
 
     @Test
