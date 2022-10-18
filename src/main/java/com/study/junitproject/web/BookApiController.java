@@ -59,8 +59,20 @@ public class BookApiController {
         return new ResponseEntity<>(CMResponseDto.builder().code(1).msg("책 삭제 성공").body(null).build(), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> update() {
-        return null;
+    @PutMapping("/api/v1/book/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid BookSaveRequestDto bookSaveRequestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError fe : bindingResult.getFieldErrors()) {
+                errorMap.put(fe.getField(), fe.getDefaultMessage());
+            }
+
+            throw new RuntimeException(errorMap.toString());
+        }
+
+        BookResponseDto bookResponseDto = bookService.update(id, bookSaveRequestDto);
+
+        return new ResponseEntity<>(CMResponseDto.builder().code(1).msg("책 수정 성공").body(bookResponseDto).build(), HttpStatus.OK);
     }
 
 }
