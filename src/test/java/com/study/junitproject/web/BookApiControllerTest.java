@@ -72,7 +72,6 @@ public class BookApiControllerTest {
     
     @Test
     @DisplayName("책 목록보기")
-    @Sql("classpath:db/tableInit.sql")
     void getList() throws Exception {
         //given
         
@@ -85,6 +84,28 @@ public class BookApiControllerTest {
         Integer code = dc.read("$.code");
         String title = dc.read("$.body.items[0].title");
         String author = dc.read("$.body.items[0].author");
+
+        assertThat(code).isEqualTo(1);
+        assertThat(title).isEqualTo("Junit");
+        assertThat(author).isEqualTo("겟인데어");
+    }
+
+    @Test
+    @DisplayName("책 단건보기")
+    @Sql("classpath:db/tableInit.sql")
+    void get() throws Exception {
+        //given
+        Long id = 1L;
+
+        //when
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.GET, request, String.class);
+
+        //then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+        String title = dc.read("$.body.title");
+        String author = dc.read("$.body.author");
 
         assertThat(code).isEqualTo(1);
         assertThat(title).isEqualTo("Junit");
