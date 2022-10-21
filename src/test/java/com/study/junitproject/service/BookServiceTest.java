@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@ActiveProfiles("dev")
 @ExtendWith(MockitoExtension.class)
 public class BookServiceTest {
 
@@ -37,9 +39,10 @@ public class BookServiceTest {
     @DisplayName("책 등록하기")
     void create() {
         //given
-        BookSaveRequestDto dto = new BookSaveRequestDto();
-        dto.setTitle("testing...");
-        dto.setAuthor("tester");
+        BookSaveRequestDto dto = BookSaveRequestDto.builder()
+                .title("testing...")
+                .author("tester")
+                .build();
 
         //stub
         when(bookRepository.save(any())).thenReturn(dto.toEntity());
@@ -99,9 +102,10 @@ public class BookServiceTest {
     void update() {
         //given
         Long id = 1L;
-        BookSaveRequestDto dto = new BookSaveRequestDto();
-        dto.setTitle("after testing");
-        dto.setAuthor("after tester");
+        BookSaveRequestDto dto = BookSaveRequestDto.builder()
+                .title("after testing")
+                .author("after tester")
+                .build();
 
         //stub
         Book book = new Book(1L, "before testing", "before tester");

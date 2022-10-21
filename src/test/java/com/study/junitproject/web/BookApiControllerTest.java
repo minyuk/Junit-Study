@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("dev")
 @SpringBootTest(webEnvironment =  SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BookApiControllerTest {
 
@@ -51,9 +53,10 @@ public class BookApiControllerTest {
     @DisplayName("책 등록하기")
     void create() throws Exception{
         //given
-        BookSaveRequestDto bookSaveRequestDto = new BookSaveRequestDto();
-        bookSaveRequestDto.setTitle("Testing...");
-        bookSaveRequestDto.setAuthor("Tester");
+        BookSaveRequestDto bookSaveRequestDto = BookSaveRequestDto.builder()
+                .title("Testing...")
+                .author("Tester")
+                .build();
 
         String body = om.writeValueAsString(bookSaveRequestDto);
 
@@ -72,6 +75,7 @@ public class BookApiControllerTest {
     
     @Test
     @DisplayName("책 목록보기")
+    @Sql("classpath:db/tableInit.sql")
     void getList() throws Exception {
         //given
         
@@ -130,6 +134,32 @@ public class BookApiControllerTest {
 
         assertThat(code).isEqualTo(1);
         assertThat(body).isNull();
+    }
+
+    @Test
+    @DisplayName("책 수정하기")
+    @Sql("classpath:db/tableInit.sql")
+    void update() throws Exception {
+        //given
+        Long id = 1L;
+        BookSaveRequestDto bookSaveRequestDto = BookSaveRequestDto.builder()
+                .title("Testing...")
+                .author("Tester")
+                .build();
+
+        String body = om.writeValueAsString(bookSaveRequestDto);
+
+        //when
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.PUT, request, String.class);
+
+        //then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        String title = dc.read("$.body.title");
+        String author = dc.read("$.body.author");
+
+        assertThat(title).isEqualTo("Testing...");
+        assertThat(author).isEqualTo("Tester");
     }
 
 }

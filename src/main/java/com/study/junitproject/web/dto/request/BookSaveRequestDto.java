@@ -1,6 +1,7 @@
 package com.study.junitproject.web.dto.request;
 
 import com.study.junitproject.domain.Book;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,12 @@ public class BookSaveRequestDto {
     @Size(min = 2, max = 20)
     @NotBlank
     private String author;
+
+    @Builder
+    public BookSaveRequestDto(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
 
     public Book toEntity() {
         return Book.builder()
