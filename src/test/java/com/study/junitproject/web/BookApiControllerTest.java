@@ -112,4 +112,24 @@ public class BookApiControllerTest {
         assertThat(author).isEqualTo("겟인데어");
     }
 
+    @Test
+    @DisplayName("책 삭제하기")
+    @Sql("classpath:db/tableInit.sql")
+    void delete() throws Exception {
+        //given
+        Long id = 1L;
+
+        //when
+        HttpEntity<String> request = new HttpEntity<>(null, headers);
+        ResponseEntity<String> response = rt.exchange("/api/v1/book/" + id, HttpMethod.DELETE, request, String.class);
+
+        //then
+        DocumentContext dc = JsonPath.parse(response.getBody());
+        Integer code = dc.read("$.code");
+        Object body = dc.read("$.body");
+
+        assertThat(code).isEqualTo(1);
+        assertThat(body).isNull();
+    }
+
 }
